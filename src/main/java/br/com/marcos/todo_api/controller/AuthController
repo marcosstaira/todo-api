@@ -1,0 +1,47 @@
+// src/main/java/.../todoapi/controller/AuthController.java
+package br.com.marcos.todo_api.controller;
+
+import br.com.marcos.todo_api.controller.dto.LoginRequestDTO;
+import br.com.marcos.todo_api.controller.model.Usuario;
+import br.com.marcos.todo_api.controller.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        // Cria um objeto de autenticação com o email e a senha
+        var usernamePassword = new UsernamePasswordAuthenticationToken(
+                loginRequestDTO.email(),
+                loginRequestDTO.senha()
+        );
+
+        // O Spring Security faz a autenticação
+        Authentication auth = authenticationManager.authenticate(usernamePassword);
+
+        // Se a autenticação for bem-sucedida, pega o objeto do usuário
+        var usuario = (Usuario) auth.getPrincipal();
+
+        // Gera o token
+        var token = tokenService.gerarToken(usuario);
+
+        // Retorna o token
+        return ResponseEntity.ok(token);
+    }
+}
