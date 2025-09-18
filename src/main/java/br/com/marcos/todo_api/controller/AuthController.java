@@ -14,22 +14,6 @@ import br.com.marcos.todo_api.model.Usuario;
 import br.com.marcos.todo_api.repository.UsuarioRepository;
 import br.com.marcos.todo_api.service.TokenService;
 
-// DTOs
-class LoginRequest {
-    private String email;
-    private String senha;
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
-}
-
-class TokenResponse {
-    private String token;
-    public TokenResponse(String token) { this.token = token; }
-    public String getToken() { return token; }
-}
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -43,26 +27,35 @@ public class AuthController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    static class LoginRequest {
+        private String email;
+        private String senha;
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getSenha() { return senha; }
+        public void setSenha(String senha) { this.senha = senha; }
+    }
+
+    static class TokenResponse {
+        private String token;
+        public TokenResponse(String token) { this.token = token; }
+        public String getToken() { return token; }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // Autentica o usuário
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     loginRequest.getEmail(), loginRequest.getSenha()
                 )
             );
 
-            // Busca usuário no banco
             Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail());
-            if (usuario == null) {
-                return ResponseEntity.status(401).body("Usuário não encontrado");
-            }
+            if (usuario == null) return ResponseEntity.status(401).body("Usuário não encontrado");
 
-            // Gera o token
             String token = tokenService.gerarToken(usuario);
-
-            // Retorna token
             return ResponseEntity.ok(new TokenResponse(token));
 
         } catch (AuthenticationException e) {

@@ -1,4 +1,5 @@
 package br.com.marcos.todo_api.config;
+
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,30 +18,36 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
     @Autowired
-    TokenService tokenService;
+    private TokenService tokenService;
+
     @Autowired
-    UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        var token = this.recoverToken(request);
-        if(token != null){
-            var email = tokenService.validarToken(token);
-            // Precisamos criar este método no UsuarioRepository
-            UserDetails user = usuarioRepository.findByEmail(email); 
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-            if (user != null) {
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = recoverToken(request);
+        if (token != null && !token.isEmpty()) {
+            String email = tokenService.validarToken(token);
+            if (!email.isEmpty()) {
+                UserDetails user = usuarioRepository.findByEmail(email);
+                if (user != null) {
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            user, null, user.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 
-    private String recoverToken(HttpServletRequest request){
-        var authHeader = request.getHeader("Authorization");
-        if(authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+    private String recoverToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
+        return authHeader.substring(7); // remove "Bearer "
     }
 }

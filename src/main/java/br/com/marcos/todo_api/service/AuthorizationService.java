@@ -17,19 +17,18 @@ public class AuthorizationService implements UserDetailsService {
     // Este é o método que o Spring Security chama para carregar o usuário pelo nome de usuário (no nosso caso, o email)
     @Override
 public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    System.out.println("--- DEBUG: DENTRO DO AuthorizationService ---");
+
     System.out.println("Buscando usuário pelo email: " + username);
 
     UserDetails user = repository.findByEmail(username);
     
     if (user != null) {
         System.out.println("Usuário encontrado: " + user.getUsername());
-        System.out.println("Senha (hash) do usuário no banco: " + user.getPassword());
     } else {
         System.out.println("Usuário NÃO encontrado com o email: " + username);
     }
     
-    System.out.println("--- DEBUG: SAINDO DO AuthorizationService ---");
+   
     return user;
 }
 }
