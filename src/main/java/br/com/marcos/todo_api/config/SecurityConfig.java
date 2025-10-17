@@ -55,20 +55,19 @@ public class SecurityConfig {
     
     // MUDANÇA 2: CRIA UM BEAN DE CONFIGURAÇÃO DE CORS
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        // Permite requisições da origem do seu frontend
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8081")); 
-        // Permite todos os métodos HTTP comuns
-        configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE"));
-        // Permite todos os cabeçalhos
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration); // Aplica para todas as rotas /api/**
-        return source;
-    }
+CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("http://localhost:8081"));
+    // ✅ GARANTA QUE "DELETE" ESTÁ NESTA LISTA
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/api/**", configuration);
+    return source;
+}
 
+    
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -86,4 +85,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    
 }
