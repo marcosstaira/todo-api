@@ -1,4 +1,4 @@
-package br.com.marcos.todo_api.model; // Use o seu nome de pacote aqui
+package br.com.marcos.todo_api.model; 
 
 import java.util.Collection;
 
@@ -45,7 +45,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null; // ou roles se quiser implementar
+        return null; 
     }
 
     @Override

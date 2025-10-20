@@ -1,5 +1,5 @@
 
-// src/main/java/.../todoapi/controller/UsuarioController.java
+
 package br.com.marcos.todo_api.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,9 @@ public class UsuarioController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Injetando o codificador de senhas
+    private PasswordEncoder passwordEncoder; 
 
-    // Endpoint para REGISTRAR um novo usuário
+    
     @PostMapping("/registrar")
 public ResponseEntity<String> registrarUsuario(@RequestBody Usuario usuario) {
     System.out.println("--- DEBUG: DENTRO DO REGISTRO ---");

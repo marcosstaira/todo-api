@@ -1,4 +1,4 @@
-package br.com.marcos.todo_api.config; // Verifique se seu pacote está correto
+package br.com.marcos.todo_api.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
